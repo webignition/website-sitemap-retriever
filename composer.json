@@ -1,8 +1,8 @@
 {
-    "name": "webignition/website-sitemap-finder",
-    "description": "Finds the sitemap(.xml) for a given website",
+    "name": "webignition/website-sitemap-retriever",
+    "description": "Given a URL, retrieve a website sitemap",
     "keywords": ["sitemap"],
-    "homepage": "https://github.com/webignition/website-sitemap-finder",
+    "homepage": "https://github.com/webignition/website-sitemap-retriever",
     "type": "library",
     "license": "MIT",
     "authors": [
