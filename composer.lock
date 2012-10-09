@@ -1,5 +1,5 @@
 {
-    "hash": "7b756626f7229b98631192f7d668ba64",
+    "hash": "8f93c0f712504c177bbf329710020dd9",
     "packages": [
         {
             "name": "querypath/QueryPath",
@@ -273,12 +273,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/sitemap-model.git",
-                "reference": "56cc51b2d13eb6b5c585839437a3e04b5d16fc29"
+                "reference": "7d1fbb7e775843908ced710206679a2eefb5f50c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/webignition/sitemap-model/zipball/56cc51b2d13eb6b5c585839437a3e04b5d16fc29",
-                "reference": "56cc51b2d13eb6b5c585839437a3e04b5d16fc29",
+                "url": "https://github.com/webignition/sitemap-model/zipball/7d1fbb7e775843908ced710206679a2eefb5f50c",
+                "reference": "7d1fbb7e775843908ced710206679a2eefb5f50c",
                 "shasum": ""
             },
             "require": {
@@ -288,7 +288,7 @@
                 "querypath/querypath": ">=3.0.0",
                 "simplepie/simplepie": "*"
             },
-            "time": "1349781246",
+            "time": "1349809842",
             "type": "library",
             "installation-source": "source",
             "autoload": {

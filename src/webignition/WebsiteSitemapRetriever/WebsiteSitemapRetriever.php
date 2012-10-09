@@ -34,17 +34,9 @@ class WebsiteSitemapRetriever {
      * @var \webignition\Http\Client\Client
      */
     private $httpClient = null;    
+   
     
-    /**
-     *
-     * @var Sitemap
-     */
-    private $sitemap;
-    
-    
-    public function retrieve(Sitemap $sitemap) {
-        $this->sitemap = $sitemap;
-        
+    public function retrieve(Sitemap $sitemap) {        
         $request = new \HttpRequest($sitemap->getUrl());
         $request->setOptions(array(
             'timeout' => 30
@@ -56,11 +48,11 @@ class WebsiteSitemapRetriever {
             return false;
         } catch (\webignition\Http\Client\CurlException $curlException) {
             return false;
-        }
+        }        
         
         if ($response->getResponseCode() != 200) {
             return false;
-        }  
+        }        
         
         $mediaTypeParser = new InternetMediaTypeParser();
         $contentType = $mediaTypeParser->parse($response->getHeader('content-type'));
@@ -71,7 +63,15 @@ class WebsiteSitemapRetriever {
         $sitemap->setContent($content);
         
         if ($sitemap->isIndex()) {
-            // populate object with child sitemaps
+            $childUrls = $sitemap->getUrls();
+            
+            foreach ($childUrls as $childUrl) {
+                $childSitemap = new Sitemap();                
+                $childSitemap->setConfiguration($sitemap->getConfiguration());
+                $childSitemap->setUrl($childUrl);
+                $this->retrieve($childSitemap);
+                $sitemap->addChild($childSitemap);
+            }            
         }
         
         return true;          
