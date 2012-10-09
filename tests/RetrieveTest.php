@@ -77,5 +77,18 @@ class RetrieveTest extends BaseTest {
         $this->assertEquals($urlCount, count($urls));
     }
     
+    public function testShallowRetrieveSitemapOrgXmlIndex() {
+        $sitemap = $this->createSitemap();
+        $sitemap->setUrl('http://io9.com/sitemap.xml');
+        
+        $this->getSitemapRetriever()->disableRetrieveChildSitemaps();
+        $this->getSitemapRetriever()->retrieve($sitemap);        
+        
+        $this->assertTrue($sitemap->isSitemap());
+        $this->assertTrue($sitemap->isIndex());
+        $this->assertEquals(5, count($sitemap->getUrls()));
+        $this->assertEquals(0, count($sitemap->getChildren()));
+    }
+    
     
 }

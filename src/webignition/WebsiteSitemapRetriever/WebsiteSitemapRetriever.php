@@ -1,9 +1,6 @@
 <?php
 namespace webignition\WebsiteSitemapRetriever;
 
-//use webignition\NormalisedUrl\NormalisedUrl;
-//use webignition\WebsiteSitemapIdentifier\WebsiteSitemapIdentifier;
-//use webignition\WebResource\WebResource;
 use webignition\InternetMediaType\InternetMediaType;
 use webignition\InternetMediaType\Parser\Parser as InternetMediaTypeParser;
 use webignition\WebResource\Sitemap\Sitemap;
@@ -14,11 +11,6 @@ use webignition\WebResource\Sitemap\Sitemap;
  * 
  */
 class WebsiteSitemapRetriever {
-    
-//    const ROBOTS_TXT_FILE_NAME = 'robots.txt';
-//    const DEFAULT_SITEMAP_XML_FILE_NAME = 'sitemap.xml';
-//    const DEFAULT_SITEMAP_TXT_FILE_NAME = 'sitemap.txt';
-//    const SITEMAP_INDEX_TYPE_NAME = 'sitemaps.org.xml.index';
     
     /**
      * Collection of content types for compressed content
@@ -33,7 +25,13 @@ class WebsiteSitemapRetriever {
      *
      * @var \webignition\Http\Client\Client
      */
-    private $httpClient = null;    
+    private $httpClient = null;
+    
+    /**
+     *
+     * @var boolean
+     */
+    private $retrieveChildSitemaps = true;
    
     
     public function retrieve(Sitemap $sitemap) {        
@@ -63,15 +61,17 @@ class WebsiteSitemapRetriever {
         $sitemap->setContent($content);
         
         if ($sitemap->isIndex()) {
-            $childUrls = $sitemap->getUrls();
-            
-            foreach ($childUrls as $childUrl) {
-                $childSitemap = new Sitemap();                
-                $childSitemap->setConfiguration($sitemap->getConfiguration());
-                $childSitemap->setUrl($childUrl);
-                $this->retrieve($childSitemap);
-                $sitemap->addChild($childSitemap);
-            }            
+            if ($this->retrieveChildSitemaps) {
+                $childUrls = $sitemap->getUrls();
+
+                foreach ($childUrls as $childUrl) {
+                    $childSitemap = new Sitemap();                
+                    $childSitemap->setConfiguration($sitemap->getConfiguration());
+                    $childSitemap->setUrl($childUrl);
+                    $this->retrieve($childSitemap);
+                    $sitemap->addChild($childSitemap);
+                }                 
+            }           
         }
         
         return true;          
@@ -133,6 +133,16 @@ class WebsiteSitemapRetriever {
         fclose($fp);
         
         return file_get_contents($destinationFilename);
-    }      
+    } 
+    
+    
+    public function enableRetrieveChildSitemaps() {
+        $this->retrieveChildSitemaps = true;
+    }
+    
+    
+    public function disableRetrieveChildSitemaps() {
+        $this->retrieveChildSitemaps = false;
+    }
     
 }
