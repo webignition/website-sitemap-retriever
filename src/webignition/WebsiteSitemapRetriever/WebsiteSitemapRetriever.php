@@ -50,12 +50,12 @@ class WebsiteSitemapRetriever {
         
         if ($response->getResponseCode() != 200) {
             return false;
-        }        
+        }
         
         $mediaTypeParser = new InternetMediaTypeParser();
         $contentType = $mediaTypeParser->parse($response->getHeader('content-type'));
         
-        $content = ($this->isCompressedContentType($contentType)) ? $this->extractGzipContent($response->getBody()) : $response->getBody();
+        $content = $this->extractGzipContent($response->getBody());
 
         $sitemap->setContentType((string)$contentType);
         $sitemap->setContent($content);
@@ -98,16 +98,6 @@ class WebsiteSitemapRetriever {
         }
         
         return $this->httpClient;
-    }   
-    
-    
-    /**
-     * 
-     * @param \webignition\InternetMediaType\InternetMediaType $contentType
-     * @return boolean
-     */
-    private function isCompressedContentType(InternetMediaType $contentType) {
-        return in_array($contentType->getTypeSubtypeString(), $this->compressedContentTypes);
     }    
     
     
