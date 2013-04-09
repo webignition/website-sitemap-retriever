@@ -4,11 +4,7 @@ php:
   - 5.4
   - 5.5
   
-before_script:  
-  # Installing pecl_http Module
-  - printf "\n\n\n\n" | pecl -q install pecl_http
-  - echo "extension=http.so" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"` 
-  
+before_script:    
   # Install composer for dependency management
   - wget http://getcomposer.org/composer.phar
   - php composer.phar install
