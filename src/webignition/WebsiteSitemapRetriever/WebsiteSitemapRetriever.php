@@ -4,6 +4,7 @@ namespace webignition\WebsiteSitemapRetriever;
 use webignition\InternetMediaType\InternetMediaType;
 use webignition\InternetMediaType\Parser\Parser as InternetMediaTypeParser;
 use webignition\WebResource\Sitemap\Sitemap;
+use Guzzle\Http\Client as HttpClient;
 
 /**
  * Retrieve over HTTP a website's sitemap and make this available as a Sitemap 
@@ -23,7 +24,7 @@ class WebsiteSitemapRetriever {
     
     /**
      *
-     * @var \webignition\Http\Client\Client
+     * @var \Guzzle\Http\Client
      */
     private $httpClient = null;
     
@@ -34,21 +35,22 @@ class WebsiteSitemapRetriever {
     private $retrieveChildSitemaps = true;
    
     
-    public function retrieve(Sitemap $sitemap) {        
-        $request = new \HttpRequest($sitemap->getUrl());
-        $request->setOptions(array(
-            'timeout' => 30
-        ));
+    public function retrieve(Sitemap $sitemap) {
+        $request = $this->getHttpClient()->get($sitemap->getUrl());
         
         try {
-            $response = $this->getHttpClient()->getResponse($request);                     
-        } catch (\webignition\Http\Client\Exception $httpClientException) {
+            $response = $request->send();  
+            
+            //echo $response;
+            
+            //file_put_contents('/home/jon/www/webignition/website-sitemap-retriever/'.  microtime(true), $response);
+            //exit();
+            
+        } catch (\Guzzle\Http\Exception\RequestException $requestException) {
             return false;
-        } catch (\webignition\Http\Client\CurlException $curlException) {
-            return false;
-        }        
+        }
         
-        if ($response->getResponseCode() != 200) {
+        if ($response->getStatusCode() !== 200) {
             return false;
         }
         
@@ -80,9 +82,9 @@ class WebsiteSitemapRetriever {
     
     /**
      *
-     * @param \webignition\Http\Client\Client $client 
+     * @param \Guzzle\Http\Client $client 
      */
-    public function setHttpClient(\webignition\Http\Client\Client $client) {
+    public function setHttpClient(\Guzzle\Http\Client $client) {
         $this->httpClient = $client;
     }
     
@@ -93,8 +95,7 @@ class WebsiteSitemapRetriever {
      */
     private function getHttpClient() {
         if (is_null($this->httpClient)) {
-            $this->httpClient = new \webignition\Http\Client\Client();
-            $this->httpClient->redirectHandler()->enable();
+            $this->httpClient = new \Guzzle\Http\Client;
         }
         
         return $this->httpClient;

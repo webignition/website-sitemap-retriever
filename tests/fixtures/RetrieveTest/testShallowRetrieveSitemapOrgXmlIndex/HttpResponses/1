@@ -1,0 +1,35 @@
+HTTP/1.1 200 OK
+Content-Type: text/xml
+P3P: CP="IDC DSP COR CURa ADMa OUR IND PHY ONL COM STA"
+Accept-Ranges: bytes
+Date: Tue, 09 Apr 2013 18:20:46 GMT
+Cache-Control: no-store
+Pragma: no-cache
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+x-cdn: Served by WebAcceleration
+x-cdn-view: mantle-default
+Transfer-Encoding: chunked
+Connection: Keep-Alive
+
+<?xml version="1.0" encoding="UTF-8" ?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <sitemap>
+        <loc><![CDATA[http://io9.com/sitemap_today.xml]]></loc>
+        <lastmod>2013-04-09T13:20:46-05:00</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc><![CDATA[http://io9.com/sitemap_news.xml]]></loc>
+        <lastmod>2013-04-09T13:20:46-05:00</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc><![CDATA[http://io9.com/sitemap_bydate.xml?startTime=2013-04-06T23:00:00&endTime=2013-04-13T22:59:59]]></loc>
+        <lastmod>2013-04-13T22:59:59-05:00</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc><![CDATA[http://io9.com/sitemap_bydate.xml?startTime=2013-03-30T23:00:00&endTime=2013-04-06T22:59:59]]></loc>
+        <lastmod>2013-04-06T22:59:59-05:00</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc><![CDATA[http://io9.com/sitemap_bydate.xml?startTime=2013-03-23T23:00:00&endTime=2013-03-30T22:59:59]]></loc>
+        <lastmod>2013-03-30T22:59:59-05:00</lastmod>
+    </sitemap>
+</sitemapindex>

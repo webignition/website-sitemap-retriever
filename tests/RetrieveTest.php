@@ -3,10 +3,10 @@
 class RetrieveTest extends BaseTest {
     
     public function setUp() {
-        $this->setTestFixturePath(__CLASS__, $this->getName());
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__CLASS__, $this->getName() . '/HttpResponses')));
     }
 
-    public function testRetrieveSitemapsOrgXmlSitemap() {        
+    public function testRetrieveSitemapsOrgXmlSitemap() {
         $sitemap = $this->createSitemap();        
         $sitemap->setUrl('http://webignition.net/sitemap.xml');
         $this->getSitemapRetriever()->retrieve($sitemap);
@@ -60,15 +60,15 @@ class RetrieveTest extends BaseTest {
         
         $urlCount = 0;
         $childSitemapUrlCounts = array(
-            '4110f998d6537492115c96745a715ecb' => 22,
-            'b35b75d56d2bf76f71af9cc436488e07' => 76,
-            '82d37105b3212f275819bfac6832f363' => 62,
-            'a334b66e1d1d1b148b81c36fa676f11c' => 101,
-            '2b3b74da7ff3c6d953aef56becd98cea' => 101
+            '4110f998d6537492115c96745a715ecb' => 71,
+            'b35b75d56d2bf76f71af9cc436488e07' => 67,
+            '3cf7b1bfdf1988dff5b951904deb4139' => 201,
+            'c73c514285122202bbfc6dbb630236de' => 16,
+            'f7e6a50f2e58de20b53e99d00d883750' => 199
         );        
         
         $urls = array();
-        foreach ($sitemap->getChildren() as $childSitemapIndex => $childSitemap) {
+        foreach ($sitemap->getChildren() as $childSitemapIndex => $childSitemap) {                        
             $urls = array_merge($urls, $childSitemap->getUrls());
             $urlCount += $childSitemapUrlCounts[$childSitemapIndex];
             $this->assertEquals($childSitemapUrlCounts[$childSitemapIndex], count($childSitemap->getUrls()));
