@@ -55,16 +55,14 @@ class RetrieveTest extends BaseTest {
         
         $this->assertTrue($sitemap->isSitemap());
         $this->assertTrue($sitemap->isIndex());
-        $this->assertEquals(5, count($sitemap->getUrls()));
-        $this->assertEquals(5, count($sitemap->getChildren()));
+        $this->assertEquals(3, count($sitemap->getUrls()));
+        $this->assertEquals(3, count($sitemap->getChildren()));
         
         $urlCount = 0;
         $childSitemapUrlCounts = array(
-            '4110f998d6537492115c96745a715ecb' => 71,
-            'b35b75d56d2bf76f71af9cc436488e07' => 67,
-            '3cf7b1bfdf1988dff5b951904deb4139' => 201,
-            'c73c514285122202bbfc6dbb630236de' => 16,
-            'f7e6a50f2e58de20b53e99d00d883750' => 199
+            '4110f998d6537492115c96745a715ecb' => 16,
+            'b35b75d56d2bf76f71af9cc436488e07' => 71,
+            '3cf7b1bfdf1988dff5b951904deb4139' => 67
         );        
         
         $urls = array();

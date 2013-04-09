@@ -10,7 +10,7 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase {
         
     /**
      *
-     * @var MockHttpClient
+     * @var \Guzzle\Http\Client
      */
     private $httpClient = null;    
     
@@ -65,34 +65,7 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase {
         }
         
         return $this->sitemapRetriever;
-    }
-    
-    
-    
-//    /**
-//     * 
-//     * @param string $testClass
-//     * @param string $testMethod
-//     * @return string
-//     */
-//    private function getTestFixturePath($testClass, $testMethod) {
-//        return __DIR__ . '/fixtures/' . $testClass . '/' . $testMethod;       
-//    }
-//    
-//    
-//    /**
-//     * Set the mock HTTP client test fixtures path based on the
-//     * test class and test method to be run
-//     * 
-//     * @param string $testClass
-//     * @param string $testMethod
-//     */
-//    protected function setTestFixturePath($testClass, $testMethod) {
-//        $this->getHttpClient()->getStoredResponseList()->setFixturesPath(
-//            $this->getTestFixturePath($testClass, $testMethod)
-//        );
-//    }
-    
+    }    
     
     
     protected function setHttpFixtures($fixtures) {
@@ -107,13 +80,21 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase {
     
     
     protected function getHttpFixtures($path) {
-        $fixtures = array();
-        
+        $fixtures = array();        
         $fixturesDirectory = new \DirectoryIterator($path);
+        
+        $fixturePathnames = array();
+        
         foreach ($fixturesDirectory as $directoryItem) {
-            if ($directoryItem->isFile()) {                
-                $fixtures[] = \Guzzle\Http\Message\Response::fromMessage(file_get_contents($directoryItem->getPathname()));
+            if ($directoryItem->isFile()) { 
+                $fixturePathnames[] = $directoryItem->getPathname();
             }
+        }
+        
+        sort($fixturePathnames);
+        
+        foreach ($fixturePathnames as $fixturePathname) {
+                $fixtures[] = \Guzzle\Http\Message\Response::fromMessage(file_get_contents($fixturePathname));            
         }
         
         return $fixtures;
@@ -127,44 +108,7 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase {
      */
     protected function getFixturesDataPath($className, $testName) {        
         return __DIR__ . '/fixtures/' . str_replace('\\', DIRECTORY_SEPARATOR, $className) . '/' . $testName;
-    }     
-    
-    
-//    /**
-//     * 
-//     * @param \HttpRequest $request
-//     */
-//    protected function storeHttpResponseAsFixture(\HttpRequest $request, \Closure $callback = null) {        
-//        $fixturePath = $this->getHttpClient()->getStoredResponseList()->getRequestFixturePath($request);
-//        $fixturePathParts = explode('/', $fixturePath);
-//        
-//        $currentPath = '';
-//        
-//        for ($partIndex = 1; $partIndex < count($fixturePathParts) - 1; $partIndex++) {
-//            $fixturePathPart = $fixturePathParts[$partIndex];
-//            if ($fixturePathPart != '') {
-//                $currentPath .= '/' . $fixturePathPart;
-//                
-//                if (!is_dir($currentPath)) {
-//                    mkdir($currentPath);
-//                }            
-//            }            
-//        }
-//        
-//        $request->send();
-//        
-//        $rawResponseContent = $request->getRawResponseMessage();
-//
-//        if (!is_null($callback)) {
-//            $rawResponseContent = $callback($rawResponseContent);
-//        }
-//        
-//        
-//        file_put_contents(
-//            $this->getHttpClient()->getStoredResponseList()->getRequestFixturePath($request),
-//            $rawResponseContent
-//        );       
-//    }
+    }
     
     
 }

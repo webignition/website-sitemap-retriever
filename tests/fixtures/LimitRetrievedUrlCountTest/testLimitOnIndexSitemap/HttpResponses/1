@@ -24,4 +24,12 @@ Connection: Keep-Alive
         <loc><![CDATA[http://io9.com/sitemap_bydate.xml?startTime=2013-04-06T23:00:00&endTime=2013-04-13T22:59:59]]></loc>
         <lastmod>2013-04-13T22:59:59-05:00</lastmod>
     </sitemap>
+    <sitemap>
+        <loc><![CDATA[http://io9.com/sitemap_bydate.xml?startTime=2013-03-30T23:00:00&endTime=2013-04-06T22:59:59]]></loc>
+        <lastmod>2013-04-06T22:59:59-05:00</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc><![CDATA[http://io9.com/sitemap_bydate.xml?startTime=2013-03-23T23:00:00&endTime=2013-03-30T22:59:59]]></loc>
+        <lastmod>2013-03-30T22:59:59-05:00</lastmod>
+    </sitemap>
 </sitemapindex>

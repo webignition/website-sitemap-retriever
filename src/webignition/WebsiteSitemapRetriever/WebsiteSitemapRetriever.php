@@ -33,9 +33,23 @@ class WebsiteSitemapRetriever {
      * @var boolean
      */
     private $retrieveChildSitemaps = true;
+    
+    
+    /**
+     *
+     * @var boolean
+     */
+    private $limitRetrievedUrlCount = false;
+    
+    
+    /**
+     *
+     * @var int
+     */
+    private $retrievedUrlCountThreshold = null;
    
     
-    public function retrieve(Sitemap $sitemap) {
+    public function retrieve(Sitemap $sitemap) {        
         $request = $this->getHttpClient()->get($sitemap->getUrl());
         
         try {
@@ -57,20 +71,55 @@ class WebsiteSitemapRetriever {
         $sitemap->setContent($content);
         
         if ($sitemap->isIndex()) {
-            if ($this->retrieveChildSitemaps) {
+            if ($this->retrieveChildSitemaps) {                
                 $childUrls = $sitemap->getUrls();
 
-                foreach ($childUrls as $childUrl) {
+                foreach ($childUrls as $childUrl) {                    
                     $childSitemap = new Sitemap();                
                     $childSitemap->setConfiguration($sitemap->getConfiguration());
-                    $childSitemap->setUrl($childUrl);
-                    $this->retrieve($childSitemap);
+                    $childSitemap->setUrl($childUrl);                    
                     $sitemap->addChild($childSitemap);
+                    
+                    if (!$this->hasTotalUrlCountExceededThreshold($sitemap)) {
+                        $this->retrieve($childSitemap);
+                    }
                 }                 
             }           
         }
         
         return true;          
+    }
+    
+    private function hasTotalUrlCountExceededThreshold(Sitemap $sitemap) {
+        if ($this->limitRetrievedUrlCount === false) {
+            return false;
+        }
+        
+        return $this->getTotalSitemapUrlCount($sitemap) > $this->getRetrievedUrlCountThreshold();        
+    }
+    
+    
+    /**
+     * 
+     * @param \webignition\WebResource\Sitemap\Sitemap $sitemap
+     * @return int
+     */
+    private function getTotalSitemapUrlCount(Sitemap $sitemap) {
+        if (!$sitemap->isSitemap()) {
+            return 0;
+        }
+        
+        if (!$sitemap->isIndex()) {
+            return count($sitemap->getUrls());
+        }
+        
+        $urls = array();
+        foreach  ($sitemap->getChildren() as $childSitemap) {
+            /* @var $childSitemap Sitemap */
+            $urls = array_merge($urls, $childSitemap->getUrls());
+        }
+        
+        return count($urls);
     }
     
     
@@ -129,5 +178,22 @@ class WebsiteSitemapRetriever {
     public function disableRetrieveChildSitemaps() {
         $this->retrieveChildSitemaps = false;
     }
+    
+    
+    public function enableLimitRetrievedUrlCount() {
+        $this->limitRetrievedUrlCount = true;
+    }
+    
+    public function disableLimitRetrievedUrlCount() {
+        $this->limitRetrievedUrlCount = false;
+    }  
+    
+    public function setRetrievedUrlCountThreshold($threshold = null) {
+        $this->retrievedUrlCountThreshold = $threshold;
+    }
+    
+    public function getRetrievedUrlCountThreshold() {
+        return $this->retrievedUrlCountThreshold;
+    }    
     
 }
