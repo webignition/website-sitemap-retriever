@@ -39,13 +39,7 @@ class WebsiteSitemapRetriever {
         $request = $this->getHttpClient()->get($sitemap->getUrl());
         
         try {
-            $response = $request->send();  
-            
-            //echo $response;
-            
-            //file_put_contents('/home/jon/www/webignition/website-sitemap-retriever/'.  microtime(true), $response);
-            //exit();
-            
+            $response = $request->send();            
         } catch (\Guzzle\Http\Exception\RequestException $requestException) {
             return false;
         }
