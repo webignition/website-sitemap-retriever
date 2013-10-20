@@ -85,7 +85,11 @@ class RetrieveTest extends BaseTest {
         $this->assertTrue($sitemap->isSitemap());
         $this->assertTrue($sitemap->isIndex());
         $this->assertEquals(5, count($sitemap->getUrls()));
-        $this->assertEquals(0, count($sitemap->getChildren()));
+        $this->assertEquals(5, count($sitemap->getChildren()));              
+        
+        foreach ($sitemap->getChildren() as $childSitemap) {
+            $this->assertNull($childSitemap->getContent());
+        }
     }
     
     
