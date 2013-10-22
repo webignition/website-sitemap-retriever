@@ -92,5 +92,23 @@ class RetrieveTest extends BaseTest {
         }
     }
     
+    public function testTotalTransferTimeout() {
+        $sitemap = $this->createSitemap();
+        $sitemap->setUrl('http://www.example.com/sitemap_index.xml');
+
+        $this->getSitemapRetriever()->setTotalTransferTimeout(0.0001);
+        $this->getSitemapRetriever()->retrieve($sitemap);        
+        
+        $this->assertEquals(2, count($sitemap->getChildren()));
+        
+        foreach ($sitemap->getChildren() as $index => $childSitemap) {
+            if ($index === 0) {
+                $this->assertEquals(2, count($childSitemap->getUrls()));
+            } else {
+                $this->assertEquals(0, count($childSitemap->getUrls()));
+            }
+        }        
+    }
+    
     
 }

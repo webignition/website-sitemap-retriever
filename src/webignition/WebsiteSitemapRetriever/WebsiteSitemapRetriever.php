@@ -2,10 +2,10 @@
 
 namespace webignition\WebsiteSitemapRetriever;
 
-use webignition\InternetMediaType\InternetMediaType;
 use webignition\InternetMediaType\Parser\Parser as InternetMediaTypeParser;
 use webignition\WebResource\Sitemap\Sitemap;
-use Guzzle\Http\Client as HttpClient;
+use Symfony\Component\EventDispatcher\EventDispatcher;  
+use webignition\WebsiteSitemapRetriever\Events;
 
 /**
  * Retrieve over HTTP a website's sitemap and make this available as a Sitemap 
@@ -13,15 +13,12 @@ use Guzzle\Http\Client as HttpClient;
  * 
  */
 class WebsiteSitemapRetriever {
-
+    
+    
     /**
-     * Collection of content types for compressed content
-     * 
-     * @var array
+     * @var int
      */
-    private $compressedContentTypes = array(
-        'application/x-gzip'
-    );
+    const DEFAULT_TOTAL_TRANSFER_TIMEOUT = 60;
 
     /**
      *
@@ -33,26 +30,127 @@ class WebsiteSitemapRetriever {
      *
      * @var boolean
      */
-    private $retrieveChildSitemaps = true;
+    private $retrieveChildSitemaps = true;    
+    
+    /**
+     *
+     * @var \Symfony\Component\EventDispatcher\EventDispatcher 
+     */
+    private $dispatcher = null;    
+    
+    /**
+     *
+     * @var float
+     */
+    private $totalTransferTime = 0;
+    
+    
+    /**
+     *
+     * @var float
+     */
+    private $totalTransferTimeout = null;
+    
+    
+    /**
+     *
+     * @var boolean
+     */
+    private $shouldHalt = false;
+    
+    
+    
+    public function __construct() {
+        $this->dispatcher = new EventDispatcher();
+        $this->dispatcher->addListener(Events::TRANSFER_PRE, array(new Listener\Transfer\PreEventListener(), 'onPreAction'));
+        $this->dispatcher->addListener(Events::TRANSFER_POST, array(new Listener\Transfer\PostEventListener(), 'onPostAction'));
+        $this->dispatcher->addListener(Events::TRANSFER_TOTAL_TIMEOUT, array(new Listener\Transfer\TotalTimeoutEventListener(), 'onTimeoutAction'));
+    } 
+    
+    
+    public function enableShouldHalt() {
+        $this->shouldHalt = true;
+    }
+    
+        
+    public function reset() {
+        $this->totalTransferTime = 0;
+    }
+    
+    
+    /**
+     * 
+     * @param float $timeout
+     */
+    public function setTotalTransferTimeout($timeout) {
+        $this->totalTransferTimeout = $timeout;
+    }
+    
+    
+    /**
+     * 
+     * @return float
+     */
+    public function getTotalTransferTimeout() {
+        return (is_null($this->totalTransferTimeout)) ? self::DEFAULT_TOTAL_TRANSFER_TIMEOUT : $this->totalTransferTimeout;
+    }
+    
+    
+    /**
+     * 
+     * @return float
+     */
+    public function getTotalTransferTime() {
+        return $this->totalTransferTime;
+    }
+    
+    
+    /**
+     * 
+     * @param float $addition
+     */
+    public function appendTotalTransferTime($addition) {
+        $this->totalTransferTime += $addition;
+    }
+   
 
-    public function retrieve(Sitemap $sitemap) {
-        $request = $this->getHttpClient()->get($sitemap->getUrl());
+    /**
+     * 
+     * @param \webignition\WebResource\Sitemap\Sitemap $sitemap
+     * @return boolean
+     */
+    public function retrieve(Sitemap $sitemap) {        
+        if ($this->shouldHalt === true) {
+            return false;
+        }
+        
+        $request = $this->getHttpClient()->get($sitemap->getUrl());        
+        $this->setRequestTimeout($request);
+        
+        $events = $this->getPreAndPostTransferEvents();        
+        $this->dispatcher->dispatch(Events::TRANSFER_PRE, $events['pre']);
 
+        $lastRequestException = null;
+        
         try {
             $response = $request->send();
-        } catch (\Guzzle\Http\Exception\RequestException $requestException) {
-            return false;
+        } catch (\Guzzle\Http\Exception\CurlException $curlException) {
+            $lastRequestException = $curlException;         
+        } catch (\Guzzle\Http\Exception\RequestException $requestException) {            
+            $lastRequestException = $requestException;
         }
+        
+        $this->dispatcher->dispatch(Events::TRANSFER_POST, $events['post']);
 
-        if ($response->getStatusCode() !== 200) {
+        if ($lastRequestException instanceof \Exception || $response->getStatusCode() !== 200) {
             return false;
-        }
+        }        
 
         $mediaTypeParser = new InternetMediaTypeParser();
         $contentType = $mediaTypeParser->parse($response->getHeader('content-type'));
-
-        $content = $this->extractGzipContent($response->getBody());
-
+        
+        $content = $this->extractGzipContent($response->getBody());       
+        
         $sitemap->setContentType((string) $contentType);
         $sitemap->setContent($content);
 
@@ -71,31 +169,32 @@ class WebsiteSitemapRetriever {
                 }
             }
         }
-
+        
         return true;
-    }
-
+    }    
+    
+    
     /**
      * 
-     * @param \webignition\WebResource\Sitemap\Sitemap $sitemap
-     * @return int
+     * @param \Guzzle\Http\Message\Request $request
      */
-    private function getTotalSitemapUrlCount(Sitemap $sitemap) {
-        if (!$sitemap->isSitemap()) {
-            return 0;
-        }
-
-        if (!$sitemap->isIndex()) {
-            return count($sitemap->getUrls());
-        }
-
-        $urls = array();
-        foreach ($sitemap->getChildren() as $childSitemap) {
-            /* @var $childSitemap Sitemap */
-            $urls = array_merge($urls, $childSitemap->getUrls());
-        }
-
-        return count($urls);
+    private function setRequestTimeout(\Guzzle\Http\Message\Request $request) {                        
+        $request->getCurlOptions()->set(CURLOPT_TIMEOUT_MS, ($this->getTotalTransferTimeout() - $this->getTotalTransferTime()) * 1000);
+    }    
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    private function getPreAndPostTransferEvents() {
+        $preTransferEvent = new Event\Transfer\PreEvent($this);
+        $postTransferEvent = new Event\Transfer\PostEvent($this, $preTransferEvent);        
+        
+        return array(
+            'pre' => $preTransferEvent,
+            'post' => $postTransferEvent
+        );
     }
 
     /**
