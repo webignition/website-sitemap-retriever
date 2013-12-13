@@ -110,5 +110,18 @@ class RetrieveTest extends BaseTest {
         }        
     }
     
+    public function testRetrieveHttpAuthProtectedSitemap() {
+        $sitemap = $this->createSitemap();
+        $sitemap->setUrl('http://http-auth-01.simplytestable.com/sitemap.xml');
+
+        $this->getSitemapRetriever()->setHttpAuthenticationUser('example');
+        $this->getSitemapRetriever()->setHttpAuthenticationPassword('password');
+        $this->getSitemapRetriever()->retrieve($sitemap);
+        
+        
+        $this->assertEquals(array(
+            'http://http-auth-01.simplytestable.com/index.html'
+        ), $sitemap->getUrls());
+    }    
     
 }
