@@ -8,7 +8,7 @@ class RetrieveTest extends BaseTest {
 
     public function testRetrieveSitemapsOrgXmlSitemap() {
         $sitemap = $this->createSitemap();        
-        $sitemap->setUrl('http://webignition.net/sitemap.xml');
+        $sitemap->setUrl('http://example.com/sitemap.xml');
         $this->getSitemapRetriever()->retrieve($sitemap);
         
         $this->assertTrue($sitemap->isSitemap());
@@ -18,7 +18,7 @@ class RetrieveTest extends BaseTest {
     
     public function testRetrieveSitemapsOrgTxtSitemap() {                
         $sitemap = $this->createSitemap();        
-        $sitemap->setUrl('http://webignition.net/sitemap.txt');
+        $sitemap->setUrl('http://example.com/sitemap.txt');
         $this->getSitemapRetriever()->retrieve($sitemap);
         
         $this->assertTrue($sitemap->isSitemap());
@@ -29,7 +29,7 @@ class RetrieveTest extends BaseTest {
     
     public function testRetrieveAtomSitemap() {        
         $sitemap = $this->createSitemap();        
-        $sitemap->setUrl('http://webignition.net/atom.xml');
+        $sitemap->setUrl('http://example.com/atom.xml');
         $this->getSitemapRetriever()->retrieve($sitemap);
         
         $this->assertTrue($sitemap->isSitemap());
@@ -40,7 +40,7 @@ class RetrieveTest extends BaseTest {
     
     public function testRetrieveRssSitemap() {                
         $sitemap = $this->createSitemap();        
-        $sitemap->setUrl('http://webignition.net/rss.xml');
+        $sitemap->setUrl('http://example.com/rss.xml');
         $this->getSitemapRetriever()->retrieve($sitemap);
         
         $this->assertTrue($sitemap->isSitemap());
@@ -50,7 +50,7 @@ class RetrieveTest extends BaseTest {
     
     public function testRetrieveSitemapOrgXmlIndex() {       
         $sitemap = $this->createSitemap();
-        $sitemap->setUrl('http://io9.com/sitemap.xml');
+        $sitemap->setUrl('http://example.com/sitemap.xml');
         $this->getSitemapRetriever()->retrieve($sitemap);
         
         $this->assertTrue($sitemap->isSitemap());
@@ -77,7 +77,7 @@ class RetrieveTest extends BaseTest {
     
     public function testShallowRetrieveSitemapOrgXmlIndex() {
         $sitemap = $this->createSitemap();
-        $sitemap->setUrl('http://io9.com/sitemap.xml');
+        $sitemap->setUrl('http://example.com/sitemap.xml');
         
         $this->getSitemapRetriever()->disableRetrieveChildSitemaps();
         $this->getSitemapRetriever()->retrieve($sitemap);        
@@ -94,7 +94,7 @@ class RetrieveTest extends BaseTest {
     
     public function testTotalTransferTimeout() {
         $sitemap = $this->createSitemap();
-        $sitemap->setUrl('http://www.example.com/sitemap_index.xml');
+        $sitemap->setUrl('http://example.com/sitemap_index.xml');
 
         $this->getSitemapRetriever()->setTotalTransferTimeout(0.0001);
         $this->getSitemapRetriever()->retrieve($sitemap);        
@@ -114,10 +114,8 @@ class RetrieveTest extends BaseTest {
         $sitemap = $this->createSitemap();
         $sitemap->setUrl('http://http-auth-01.simplytestable.com/sitemap.xml');
 
-        $this->getSitemapRetriever()->setHttpAuthenticationUser('example');
-        $this->getSitemapRetriever()->setHttpAuthenticationPassword('password');
-        $this->getSitemapRetriever()->retrieve($sitemap);
-        
+        $this->getSitemapRetriever()->getBaseRequest()->setAuth('example', 'password', 'any');
+        $this->getSitemapRetriever()->retrieve($sitemap);        
         
         $this->assertEquals(array(
             'http://http-auth-01.simplytestable.com/index.html'
