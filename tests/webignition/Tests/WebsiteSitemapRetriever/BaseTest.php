@@ -94,8 +94,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase {
     protected function getSitemapRetriever() {
         if (is_null($this->sitemapRetriever)) {
             $this->sitemapRetriever = new WebsiteSitemapRetriever();
-            $baseRequest = $this->getHttpClient()->get();
-            $this->sitemapRetriever->setBaseRequest($baseRequest);
+            $this->sitemapRetriever->getConfiguration()->setBaseRequest($this->getHttpClient()->get());
         }
         
         return $this->sitemapRetriever;

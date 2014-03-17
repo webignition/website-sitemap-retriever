@@ -12,18 +12,7 @@ use webignition\WebsiteSitemapRetriever\Events;
  * object
  * 
  */
-class WebsiteSitemapRetriever {    
-    
-    /**
-     * @var int
-     */
-    const DEFAULT_TOTAL_TRANSFER_TIMEOUT = 60;
-
-    /**
-     *
-     * @var boolean
-     */
-    private $retrieveChildSitemaps = true;    
+class WebsiteSitemapRetriever {      
     
     /**
      *
@@ -31,33 +20,19 @@ class WebsiteSitemapRetriever {
      */
     private $dispatcher = null;    
     
+    
+    /**
+     *
+     * @var \webignition\WebsiteSitemapRetriever\Configuration\Configuration
+     */
+    private $configuration = null;
+    
+    
     /**
      *
      * @var float
      */
-    private $totalTransferTime = 0;
-    
-    
-    /**
-     *
-     * @var float
-     */
-    private $totalTransferTimeout = null;
-    
-    
-    /**
-     *
-     * @var boolean
-     */
-    private $shouldHalt = false;
-    
-    
-    /**
-     *
-     * @var \Guzzle\Http\Message\Request
-     */
-    private $baseRequest = null;
-    
+    private $totalTransferTime = 0;    
     
     
     public function __construct() {
@@ -65,60 +40,26 @@ class WebsiteSitemapRetriever {
         $this->dispatcher->addListener(Events::TRANSFER_PRE, array(new Listener\Transfer\PreEventListener(), 'onPreAction'));
         $this->dispatcher->addListener(Events::TRANSFER_POST, array(new Listener\Transfer\PostEventListener(), 'onPostAction'));
         $this->dispatcher->addListener(Events::TRANSFER_TOTAL_TIMEOUT, array(new Listener\Transfer\TotalTimeoutEventListener(), 'onTimeoutAction'));
-    } 
-    
-    
-    
-    /**
-     * 
-     * @param \Guzzle\Http\Message\Request $request
-     */
-    public function setBaseRequest(\Guzzle\Http\Message\Request $request) {
-        $this->baseRequest = $request;
     }
     
     
-    
     /**
      * 
-     * @return \Guzzle\Http\Message\Request $request
+     * @return \webignition\WebsiteSitemapRetriever\Configuration\Configuration
      */
-    public function getBaseRequest() {
-        if (is_null($this->baseRequest)) {
-            $client = new \Guzzle\Http\Client;            
-            $this->baseRequest = $client->get();
+    public function getConfiguration() {
+        if (is_null($this->configuration)) {
+            $this->configuration = new Configuration\Configuration();
         }
         
-        return $this->baseRequest;
-    }
-    
-    
-    public function enableShouldHalt() {
-        $this->shouldHalt = true;
+        return $this->configuration;
     }
     
         
     public function reset() {
         $this->totalTransferTime = 0;
     }
-    
-    
-    /**
-     * 
-     * @param float $timeout
-     */
-    public function setTotalTransferTimeout($timeout) {
-        $this->totalTransferTimeout = $timeout;
-    }
-    
-    
-    /**
-     * 
-     * @return float
-     */
-    public function getTotalTransferTimeout() {
-        return (is_null($this->totalTransferTimeout)) ? self::DEFAULT_TOTAL_TRANSFER_TIMEOUT : $this->totalTransferTimeout;
-    }
+
     
     
     /**
@@ -144,12 +85,12 @@ class WebsiteSitemapRetriever {
      * @param \webignition\WebResource\Sitemap\Sitemap $sitemap
      * @return boolean
      */
-    public function retrieve(Sitemap $sitemap) {        
-        if ($this->shouldHalt === true) {
+    public function retrieve(Sitemap $sitemap) {
+        if ($this->getConfiguration()->getShouldHalt()) {
             return false;
         }
         
-        $request = clone $this->getBaseRequest();
+        $request = clone $this->getConfiguration()->getBaseRequest();
         $request->setUrl($sitemap->getUrl());
         
         $this->setRequestTimeout($request);
@@ -191,7 +132,7 @@ class WebsiteSitemapRetriever {
                 $childSitemap->setUrl($childUrl);
                 $sitemap->addChild($childSitemap);
 
-                if ($this->retrieveChildSitemaps) {
+                if ($this->getConfiguration()->getRetrieveChildSitemaps()) {
                     $this->retrieve($childSitemap);
                 }
             }
@@ -206,7 +147,7 @@ class WebsiteSitemapRetriever {
      * @param \Guzzle\Http\Message\Request $request
      */
     private function setRequestTimeout(\Guzzle\Http\Message\Request $request) {                        
-        $request->getCurlOptions()->set(CURLOPT_TIMEOUT_MS, ($this->getTotalTransferTimeout() - $this->getTotalTransferTime()) * 1000);
+        $request->getCurlOptions()->set(CURLOPT_TIMEOUT_MS, ($this->getConfiguration()->getTotalTransferTimeout() - $this->getTotalTransferTime()) * 1000);
     }    
     
     
@@ -246,14 +187,6 @@ class WebsiteSitemapRetriever {
         fclose($fp);
 
         return file_get_contents($destinationFilename);
-    }
-
-    public function enableRetrieveChildSitemaps() {
-        $this->retrieveChildSitemaps = true;
-    }
-
-    public function disableRetrieveChildSitemaps() {
-        $this->retrieveChildSitemaps = false;
     }
 
 }

@@ -82,7 +82,7 @@ class RetrieveTest extends BaseTest {
         $sitemap = $this->createSitemap();
         $sitemap->setUrl('http://example.com/sitemap.xml');
         
-        $this->getSitemapRetriever()->disableRetrieveChildSitemaps();
+        $this->getSitemapRetriever()->getConfiguration()->disableRetrieveChildSitemaps();
         $this->getSitemapRetriever()->retrieve($sitemap);        
         
         $this->assertTrue($sitemap->isSitemap());
@@ -99,7 +99,7 @@ class RetrieveTest extends BaseTest {
         $sitemap = $this->createSitemap();
         $sitemap->setUrl('http://example.com/sitemap_index.xml');
 
-        $this->getSitemapRetriever()->setTotalTransferTimeout(0.0001);
+        $this->getSitemapRetriever()->getConfiguration()->setTotalTransferTimeout(0.0001);
         $this->getSitemapRetriever()->retrieve($sitemap);        
         
         $this->assertEquals(2, count($sitemap->getChildren()));
@@ -117,7 +117,7 @@ class RetrieveTest extends BaseTest {
         $sitemap = $this->createSitemap();
         $sitemap->setUrl('http://http-auth-01.simplytestable.com/sitemap.xml');
 
-        $this->getSitemapRetriever()->getBaseRequest()->setAuth('example', 'password', 'any');
+        $this->getSitemapRetriever()->getConfiguration()->getBaseRequest()->setAuth('example', 'password', 'any');
         $this->getSitemapRetriever()->retrieve($sitemap);        
         
         $this->assertEquals(array(
