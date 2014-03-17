@@ -1,18 +1,17 @@
 <?php
 
-namespace webignition\Tests\WebsiteSitemapRetriever\Retrieve\CookiesTest\RootSitemap;
+namespace webignition\Tests\WebsiteSitemapRetriever\Retrieve\CookiesTest\SitemapIndex;
 
-class SecureTest extends RootSitemapTest { 
+class DomainTest extends SitemapIndexTest { 
     
     protected function getSitemapUrl() {
-        return 'https://example.com/sitemap.xml';
-    }    
+        return 'http://example.com/sitemap.xml';
+    }
     
     protected function getCookies() {
         return array(
             array(
                 'domain' => '.example.com',
-                'secure' => true,
                 'name' => 'foo',
                 'value' => 'bar'
             )
@@ -20,10 +19,17 @@ class SecureTest extends RootSitemapTest {
     }
 
     protected function getExpectedRequestsOnWhichCookiesShouldBeSet() {
-        return array($this->getLastSentHttpRequest());
+        $requests = $this->getAllSentHttpRequests();
+        
+        return array(
+            $requests[0],
+            $requests[1],
+        );
     }
 
     protected function getExpectedRequestsOnWhichCookiesShouldNotBeSet() {
-        return array();
-    }    
+        return array($this->getLastSentHttpRequest());
+    }   
+    
+    
 }

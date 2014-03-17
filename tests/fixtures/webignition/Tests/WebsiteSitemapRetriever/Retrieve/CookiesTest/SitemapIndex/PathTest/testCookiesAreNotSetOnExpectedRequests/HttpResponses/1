@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Content-Type: text/xml
+
+<?xml version="1.0" encoding="UTF-8" ?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <sitemap>
+        <loc><![CDATA[http://example.com/foo/sitemap.xml]]></loc>
+        <lastmod>2013-04-09T13:20:46-05:00</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc><![CDATA[http://example.com/sitemap.xml]]></loc>
+        <lastmod>2013-04-09T13:20:46-05:00</lastmod>
+    </sitemap>
+</sitemapindex>

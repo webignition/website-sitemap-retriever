@@ -2,8 +2,6 @@
 
 namespace webignition\Tests\WebsiteSitemapRetriever\Retrieve\CookiesTest\RootSitemap;
 
-use webignition\Tests\WebsiteSitemapRetriever\Retrieve\CookiesTest\RootSitemap\RootSitemapTest;
-
 class DomainTest extends RootSitemapTest { 
     
     protected function getSitemapUrl() {
@@ -21,7 +19,7 @@ class DomainTest extends RootSitemapTest {
     }
 
     protected function getExpectedRequestsOnWhichCookiesShouldBeSet() {
-        return array($this->getHttpHistory()->getLastRequest());
+        return array($this->getLastSentHttpRequest());
     }
 
     protected function getExpectedRequestsOnWhichCookiesShouldNotBeSet() {

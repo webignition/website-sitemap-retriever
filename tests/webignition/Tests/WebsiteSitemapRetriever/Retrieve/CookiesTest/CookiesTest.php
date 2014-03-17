@@ -68,6 +68,41 @@ abstract class CookiesTest extends BaseTest {
         }
         
         return $nameValueArray;
-    }    
+    } 
+    
+    
+    /**
+     * 
+     * @return \Guzzle\Http\Message\Request[]
+     */
+    protected function getAllSentHttpRequests() {
+        $requests = array();
+        
+        foreach ($this->getHttpHistory()->getAll() as $httpTransaction) {
+            $requests[] = $httpTransaction['request'];
+        }
+        
+        return $requests;
+    }
+
+    
+    /**
+     * 
+     * @return \Guzzle\Http\Message\Request
+     */
+    protected function getFirstSentHttpRequest() {
+        $requests = $this->getAllSentHttpRequests();
+        return $requests[0];
+    }
+    
+    
+    /**
+     * 
+     * @return \Guzzle\Http\Message\Request
+     */
+    protected function getLastSentHttpRequest() {
+        $requests = $this->getAllSentHttpRequests();
+        return $requests[count($requests) - 1];
+    }
     
 }
