@@ -1,9 +1,12 @@
 <?php
 
+namespace webignition\Tests\WebsiteSitemapRetriever;
+
 class RetrieveTest extends BaseTest {
     
-    public function setUp() {
-        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath(__CLASS__, $this->getName() . '/HttpResponses')));
+    public function setUp() { 
+        parent::setUp();
+        $this->setHttpFixtures($this->getHttpFixtures($this->getFixturesDataPath() . '/HttpResponses'));
     }
 
     public function testRetrieveSitemapsOrgXmlSitemap() {
