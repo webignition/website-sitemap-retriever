@@ -1,8 +1,10 @@
 <?php
 
-namespace webignition\Tests\WebsiteSitemapRetriever;
+namespace webignition\Tests\WebsiteSitemapRetriever\Retrieve;
 
-class RetrieveTest extends BaseTest {
+use webignition\Tests\WebsiteSitemapRetriever\BaseTest;
+
+class DefaultTest extends BaseTest {
     
     public function setUp() { 
         parent::setUp();
