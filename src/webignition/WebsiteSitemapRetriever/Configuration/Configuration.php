@@ -37,6 +37,13 @@ class Configuration {
      */
     private $baseRequest = null;
     
+    
+    /**
+     *
+     * @var array
+     */
+    private $cookies = array();    
+    
 
     /**
      * 
@@ -141,5 +148,25 @@ class Configuration {
     public function getRetrieveChildSitemaps() {
         return $this->retrieveChildSitemaps;
     }
+    
+    
+    /**
+     * 
+     * @param array $cookies
+     * @return \webignition\CssValidatorWrapper\Configuration\Configuration
+     */
+    public function setCookies($cookies) {
+        $this->cookies = $cookies;
+        return $this;
+    }
+    
+    
+    /**
+     * 
+     * @return array
+     */
+    public function getCookies() {
+        return $this->cookies;
+    }    
 
 }
