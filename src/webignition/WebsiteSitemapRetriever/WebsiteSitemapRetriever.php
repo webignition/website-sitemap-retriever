@@ -2,7 +2,6 @@
 
 namespace webignition\WebsiteSitemapRetriever;
 
-use webignition\InternetMediaType\Parser\Parser as InternetMediaTypeParser;
 use webignition\WebResource\Sitemap\Sitemap;
 use Symfony\Component\EventDispatcher\EventDispatcher;  
 use webignition\WebsiteSitemapRetriever\Events;
@@ -114,14 +113,8 @@ class WebsiteSitemapRetriever {
         if ($lastRequestException instanceof \Exception || $response->getStatusCode() !== 200) {
             return false;
         }        
-
-        $mediaTypeParser = new InternetMediaTypeParser();
-        $contentType = $mediaTypeParser->parse($response->getHeader('content-type'));
         
-        $content = $this->extractGzipContent($response->getBody());       
-        
-        $sitemap->setContentType((string) $contentType);
-        $sitemap->setContent($content);
+        $sitemap->setHttpResponse($response);
 
         if ($sitemap->isIndex()) {
 
@@ -181,30 +174,6 @@ class WebsiteSitemapRetriever {
             'pre' => $preTransferEvent,
             'post' => $postTransferEvent
         );
-    }
-
-    /**
-     * 
-     * @param string $gzippedContent
-     * @return string
-     */
-    private function extractGzipContent($gzippedContent) {
-        $sourceFilename = sys_get_temp_dir() . '/' . md5(microtime(true));
-        $destinationFilename = $sourceFilename . '.xml';
-
-        file_put_contents($sourceFilename, $gzippedContent);
-
-        $sfp = gzopen($sourceFilename, "rb");
-        $fp = fopen($destinationFilename, "w");
-
-        while ($string = gzread($sfp, 4096)) {
-            fwrite($fp, $string, strlen($string));
-        }
-
-        gzclose($sfp);
-        fclose($fp);
-
-        return file_get_contents($destinationFilename);
     }
 
 }
